@@ -1,4 +1,7 @@
 <h1 style="font-family: 'Arial';">DB Migration Library</h1> 
+<p><b>Technology Stack</b>
+Java 17, Gradle, JDBC, HikariCP, JUnit, Mockito, SnakeYAML, MySQL Database
+
 <p><b>1.	Reading Configuration and Scripts</b>
 <p>DB Migration Library loads the main application settings from ‘application.yml’ file. It reads the YAML file once and store the values in ‘config’. Then the library reads a section ‘scripts’ from ‘config’. This section contains the path and file name of the scripts(changelog/scripts.yml) that must be executed to migrate the database. ‘Scripts.yml’ lists the SQL scripts and their versions. A parser (ChangeLogParser) looks for a section named databaseChangeLog. Each entry becomes an object (DatabaseChangeLogScript) with a file path and a version.
 <p><b>2.	Setting Up the Connection and Lock</b>
