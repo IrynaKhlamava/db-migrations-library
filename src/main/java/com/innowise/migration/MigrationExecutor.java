@@ -1,6 +1,7 @@
 package com.innowise.migration;
 
 import com.innowise.exception.MigrationException;
+import com.innowise.exception.MigrationScriptException;
 import com.innowise.migration.model.DatabaseChangeLogScript;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,9 +34,10 @@ public class MigrationExecutor {
             setLock(connection);
             connection.setAutoCommit(false);
             runScripts(scripts, connection);
-            removeLock(connection);
         } catch (SQLException e) {
             throw new MigrationException("Migration failed", e);
+        } finally {
+            removeLock(connection);
         }
     }
 
@@ -45,7 +47,7 @@ public class MigrationExecutor {
                 scriptExecutor.executeScript(connection, script);
                 connection.commit();
             }
-        } catch (SQLException e) {
+        } catch (SQLException | MigrationScriptException e) {
             rollbackMigration(connection);
             throw new MigrationException("Migration failed, rollback executed", e);
         }

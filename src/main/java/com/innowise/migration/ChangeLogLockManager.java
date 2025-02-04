@@ -11,7 +11,7 @@ import java.util.UUID;
  * Manages the database lock mechanism for migrations.
  * It ensures that only one migration process runs at a time by setting and releasing a lock
  * in the 'CHANGELOGLOCK' table.
- * */
+ */
 
 
 public class ChangeLogLockManager {
@@ -29,10 +29,6 @@ public class ChangeLogLockManager {
     private static final String SET_LOCK = "UPDATE CHANGELOGLOCK " +
             "SET LOCKED = TRUE, LOCKED_AT = ?, LOCKED_BY = ? " +
             "WHERE ID = 1 AND LOCKED = FALSE";
-
-    private static final String REMOVE_LOCK = "UPDATE CHANGELOGLOCK" +
-            "SET LOCKED = FALSE, LOCKED_AT = NULL, LOCKED_BY = NULL " +
-            "WHERE ID = 1";
 
     private static final String UNLOCK_CHANGELOG = """
                 UPDATE changeloglock
@@ -67,8 +63,7 @@ public class ChangeLogLockManager {
     }
 
     private void initializeLockTable(Connection connection) {
-        try
-                (Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
 
             statement.execute(CREATE_CHANGELOG_LOCK_TABLE);
             logger.info("CHANGELOGLOCK table has been successfully created ");
@@ -108,7 +103,6 @@ public class ChangeLogLockManager {
     }
 
     public boolean isLocked(Connection connection) {
-        //releaseExpiredLock(connection);
         try (PreparedStatement statement = connection.prepareStatement(CHECK_LOCK);
              ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
@@ -125,8 +119,7 @@ public class ChangeLogLockManager {
             return isLockTableExists;
         }
 
-        try (
-             ResultSet resultSet = connection.getMetaData().getTables(null, null, CHANGELOG_LOCK_TABLE, null)) {
+        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, CHANGELOG_LOCK_TABLE, null)) {
 
             isLockTableExists = resultSet.next();
             isLockTableChecked = true;
@@ -137,33 +130,5 @@ public class ChangeLogLockManager {
             throw new ChangeLogLockException("Failed to check if CHANGELOGLOCK table exists", e);
         }
     }
-
-//    private void releaseExpiredLock(Connection connection) {
-//        if (isStaleLock(connection)) {
-//            logger.warn("Stale lock detected. Releasing lock...");
-//            try (PreparedStatement stmt = connection.prepareStatement(UNLOCK_QUERY)) {
-//                stmt.executeUpdate();
-//                connection.commit();
-//                logger.info("Stale lock removed.");
-//            } catch (SQLException e) {
-//                logger.error("Failed to remove stale lock", e);
-//            }
-//        }
-//    }
-//
-//    private boolean isStaleLock(Connection connection) {
-//        String query = "SELECT LOCKED_AT FROM CHANGELOGLOCK WHERE LOCKED = TRUE";
-//        try (PreparedStatement stmt = connection.prepareStatement(query);
-//             ResultSet rs = stmt.executeQuery()) {
-//            if (rs.next()) {
-//                Timestamp lockedAt = rs.getTimestamp("LOCKED_AT");
-//                long lockedDuration = Duration.between(lockedAt.toInstant(), Instant.now()).toMinutes();
-//                return lockedDuration > LOCK_TIMEOUT_MINUTES;
-//            }
-//        } catch (SQLException e) {
-//            logger.error("Failed to check stale lock", e);
-//        }
-//        return false;
-//    }
 
 }

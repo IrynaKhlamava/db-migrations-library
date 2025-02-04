@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: changelog/sql/create_db_bike_rental.sql
+      version: 1.1.1
+  - include:
+      file: changelog/sql/insert_data_into_bike_rental.sql
+      version: 1.0.0

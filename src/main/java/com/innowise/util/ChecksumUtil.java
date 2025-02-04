@@ -2,10 +2,13 @@ package com.innowise.util;
 
 import com.innowise.exception.ChecksumCalculationException;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Provides a utility method to calculate a SHA-256 checksum for a given file.
  **/
@@ -31,7 +34,7 @@ public class ChecksumUtil {
                 checksum.append(String.format("%02x", b));
             }
             return checksum.toString();
-        } catch (Exception e) {
+        } catch (IOException | NoSuchAlgorithmException e) {
             throw new ChecksumCalculationException("Failed to calculate checksum for file: " + filePath, e);
         }
     }

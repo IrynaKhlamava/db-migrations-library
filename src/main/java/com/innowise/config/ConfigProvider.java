@@ -5,7 +5,8 @@ import com.innowise.exception.ConfigurationLoadException;
 import java.util.Map;
 
 /**
- * Provides access to script configuration from 'application.yml'.
+ * Provides access to 'scripts' section from  ConfigurationManager 'config'.
+ * Returns the name of a file with a resource path that contains scripts for database migration
  */
 
 public class ConfigProvider {
